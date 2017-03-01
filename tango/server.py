@@ -434,7 +434,8 @@ def __create_tango_deviceclass_klass(tango_device_klass, attrs=None):
             else:
                 attr_name = attr_obj.attr_name
             attr_list[attr_name] = attr_obj
-            __patch_attr_methods(tango_device_klass, attr_obj)
+            if not attr_obj.forwarded:
+                __patch_attr_methods(tango_device_klass, attr_obj)
         elif isinstance(attr_obj, pipe):
             if attr_obj.pipe_name is None:
                 attr_obj._set_name(attr_name)

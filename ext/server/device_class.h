@@ -60,6 +60,15 @@ public:
     }
 
     /**
+     * Creates a forwarded attribute and adds it to the att_list.
+     * This method is intended to be called by python to register a new
+     * forwarded attribute.
+     */
+    void create_forwarded_attribute(vector<Tango::Attr *> &att_list,
+                          const std::string &attr_name,
+                          Tango::UserDefaultFwdAttrProp *att_prop);
+
+    /**
      * Creates an attribute and adds it to the att_list.
      * This method is intended to be called by python to register a new
      * attribute.

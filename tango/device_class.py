@@ -22,7 +22,7 @@ __docformat__ = "restructuredtext"
 import collections
 
 from ._tango import Except, DevFailed, DeviceClass, CmdArgType, \
-    DispLevel, UserDefaultAttrProp
+    DispLevel, UserDefaultAttrProp, UserDefaultFwdAttrProp
 from .pyutil import Util
 
 from .utils import is_pure_str, is_non_str_seq, seqStr_2_obj, obj_2_str, \
@@ -330,7 +330,12 @@ def __DeviceClass__attribute_factory(self, attr_list):
             attr_data = attr_info
         else:
             attr_data = AttrData(attr_name, self.get_name(), attr_info)
-        self._create_attribute(attr_list, attr_data.attr_name,
+        if attr_data.forwarded:
+            self._create_forwarded_attribute(attr_list,
+                                             attr_data.attr_name,
+                                             attr_data.att_prop)
+        else:
+            self._create_attribute(attr_list, attr_data.attr_name,
                                attr_data.attr_type,
                                attr_data.attr_format,
                                attr_data.attr_write,

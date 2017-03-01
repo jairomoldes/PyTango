@@ -70,6 +70,18 @@ void CppDeviceClass::create_command(const std::string &cmd_name,
         command_list.push_back(cmd_ptr);
 }
 
+void CppDeviceClass::create_forwarded_attribute(vector<Tango::Attr *> &att_list,
+				      const std::string &attr_name,
+				      Tango::UserDefaultFwdAttrProp *att_prop)
+{
+    Tango::FwdAttr *attr_ptr = NULL;
+
+    attr_ptr = new PyFwdAttr(attr_name);
+    if (att_prop)
+        attr_ptr->set_default_properties(*att_prop);
+    att_list.push_back(attr_ptr);
+}
+
 void CppDeviceClass::create_attribute(vector<Tango::Attr *> &att_list,
 				      const std::string &attr_name,
 				      Tango::CmdArgType attr_type,
@@ -451,6 +463,7 @@ void export_device_class()
             (void (Tango::DeviceClass::*) (const char *))
             &Tango::DeviceClass::device_destroyer)
         .def("_create_attribute", &CppDeviceClass::create_attribute)
+        .def("_create_forwarded_attribute", &CppDeviceClass::create_forwarded_attribute)
         .def("_create_pipe", &CppDeviceClass::create_pipe)
         .def("_create_command", &CppDeviceClass::create_command)
         .def("get_class_attr", &Tango::DeviceClass::get_class_attr,

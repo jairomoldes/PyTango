@@ -69,5 +69,10 @@ void export_user_default_attr_prop()
         .def_readwrite("enum_labels", &Tango::UserDefaultAttrProp::enum_labels)
     ;
 
+    class_<Tango::UserDefaultFwdAttrProp, boost::noncopyable>("UserDefaultFwdAttrProp")
+        .def("set_label", &Tango::UserDefaultFwdAttrProp::set_label)
+        .def_readwrite("label", &Tango::UserDefaultFwdAttrProp::label)
+    ;
+
 }
 

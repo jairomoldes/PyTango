@@ -21,6 +21,12 @@ WAttribute
 .. autoclass:: tango.WAttribute
     :members:
 
+FwdAttr
+----
+
+.. autoclass:: tango.FwdAttr
+    :members:
+
 MultiAttribute
 --------------
 
@@ -31,4 +37,10 @@ UserDefaultAttrProp
 -------------------
 
 .. autoclass:: tango.UserDefaultAttrProp
+    :members:
+
+UserDefaultFwdAttrProp
+-------------------
+
+.. autoclass:: tango.UserDefaultFwdAttrProp
     :members:

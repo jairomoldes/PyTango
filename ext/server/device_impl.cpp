@@ -641,6 +641,22 @@ namespace PyDeviceImpl
         self.add_attribute(attr_ptr);
     }
 
+    void add_fwd_attribute(Tango::DeviceImpl &self, const Tango::FwdAttr &c_new_attr)
+    {
+        //
+        // Create the attribute object
+        //
+        Tango::FwdAttr &new_attr = const_cast<Tango::FwdAttr &>(c_new_attr);
+        PyFwdAttr *fwd_attr_ptr= NULL;
+        vector<Tango::AttrProperty> &def_prop = new_attr.get_user_default_properties();
+        fwd_attr_ptr = new PyFwdAttr(new_attr.get_name(), def_prop);
+
+        //
+        // Install attribute in Tango.
+        //
+        self.add_attribute(fwd_attr_ptr);
+    }
+
     void remove_attribute(Tango::DeviceImpl &self, const char *att_name,
                           bool clean_db = true)
     {
@@ -1461,6 +1477,7 @@ void export_device_impl()
             &Tango::DeviceImpl::set_archive_event,
             set_archive_event_overload())
         .def("_add_attribute", &PyDeviceImpl::add_attribute)
+        .def("_add_fwd_attribute", &PyDeviceImpl::add_fwd_attribute)
         .def("_remove_attribute", &PyDeviceImpl::remove_attribute,
             remove_attribute_overload())
         //@TODO .def("get_device_class")

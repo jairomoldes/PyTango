@@ -156,6 +156,35 @@ void PyAttr::set_user_prop(vector<Tango::AttrProperty> &user_prop,
     }
 }
 
+void PyFwdAttr::set_user_prop(vector<Tango::AttrProperty> &user_prop,
+                           Tango::UserDefaultFwdAttrProp &def_prop)
+{
+
+//
+// Is there any user defined prop. defined ?
+//
+
+    size_t nb_prop = user_prop.size();
+    if (nb_prop == 0)
+        return;
+
+    for (size_t loop = 0;loop < nb_prop;loop++)
+    {
+        Tango::AttrProperty  prop = user_prop[loop];
+        string &prop_name = prop.get_name();
+        const char *prop_value = prop.get_value().c_str();
+
+        if (prop_name == "label")
+            def_prop.set_label(prop_value);
+        else {
+            TangoSys_OMemStream o;
+            o << "Forwarded attributes allow only \"label\" property";
+            Tango::Except::throw_exception("PyTango_WrongAttributeDefinition",
+                o.str(), "PyTango::FwdAttr::set_user_prop");
+        }
+    }
+}
+
 void export_attr()
 {
     class_<Tango::Attr, boost::noncopyable>("Attr",
@@ -169,6 +198,7 @@ void export_attr()
         .def("set_change_event", &Tango::Attr::set_change_event)
         .def("is_change_event", &Tango::Attr::is_change_event)
         .def("is_check_change_criteria", &Tango::Attr::is_check_change_criteria)
+        .def("is_fwd", &Tango::Attr::is_fwd)
         .def("set_archive_event", &Tango::Attr::set_archive_event)
         .def("is_archive_event", &Tango::Attr::is_archive_event)
         .def("is_check_archive_criteria", &Tango::Attr::is_check_archive_criteria)
@@ -206,6 +236,13 @@ void export_attr()
 
     class_<Tango::ImageAttr, bases<Tango::SpectrumAttr>, boost::noncopyable>("ImageAttr",
         init<const char *, long, Tango::AttrWriteType, long, long>())
+    ;
+
+    class_<Tango::FwdAttr, bases<Tango::ImageAttr>, boost::noncopyable>("FwdAttr",
+        init<const char *, optional<const char *> >())
+
+		.def("set_default_properties", &Tango::FwdAttr::set_default_properties)
+        .def("is_fwd", &Tango::FwdAttr::is_fwd)
     ;
 
 //    class_<PyAttr>("PyAttr", no_init)

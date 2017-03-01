@@ -364,4 +364,78 @@ public:
     }
 };
 
+//------------------------------------------------------------------------------------------------
+
+/**
+ * The python class representing a forwarded attribute
+ */
+class PyFwdAttr: public Tango::FwdAttr,
+                 public PyAttr
+{
+public:
+    /**
+     * Python Forwarded Attribute constructor
+     *
+     * @param[in] na The attribute name
+     */
+    PyFwdAttr(const std::string &na)
+        : Tango::FwdAttr(na.c_str())
+    {}
+
+    /**
+     * Python Forwarded Attribute constructor
+     *
+     * @param[in] na The attribute name
+     * @param[in] ra The root attribute name
+     */
+    PyFwdAttr(const std::string &na, const std::string &ra)
+        : Tango::FwdAttr(na.c_str(), ra.c_str())
+    {}
+
+    /**
+     * Python Forwarded Attribute constructor
+     *
+     * @param[in] na The attribute name
+     * @param[in] user_prop The attribute user default properties
+     */
+    PyFwdAttr(const std::string &na, std::vector<Tango::AttrProperty> &user_prop)
+        : Tango::FwdAttr(na.c_str())
+    {
+        if (user_prop.size() == 0)
+            return;
+
+        Tango::UserDefaultFwdAttrProp def_prop;
+        set_user_prop(user_prop,def_prop);
+        set_default_properties(def_prop);
+    }
+
+    /**
+     * Python Forwarded Attribute constructor
+     *
+     * @param[in] na The attribute name
+     * @param[in] ra The root attribute name
+     * @param[in] user_prop The attribute user default properties
+     */
+    PyFwdAttr(const std::string &na, const std::string &ra, std::vector<Tango::AttrProperty> &user_prop)
+        : Tango::FwdAttr(na.c_str(), ra.c_str())
+    {
+        if (user_prop.size() == 0)
+            return;
+
+        Tango::UserDefaultFwdAttrProp def_prop;
+        set_user_prop(user_prop,def_prop);
+        set_default_properties(def_prop);
+    }
+
+    /**
+     * Python Forwarded Attribute destructor
+     */
+    ~PyFwdAttr()
+    {}
+
+    void set_user_prop(std::vector<Tango::AttrProperty> &user_prop,
+                       Tango::UserDefaultFwdAttrProp &def_prop);
+
+};
+
 #endif

@@ -17,12 +17,11 @@ from __future__ import print_function
 
 import copy
 
-from ._tango import (
-    DeviceImpl, Device_3Impl, Device_4Impl, Device_5Impl,
-    DevFailed, Attribute, WAttribute,
-    MultiAttribute, MultiClassAttribute,
-    Attr, Logger, AttrWriteType, AttrDataFormat,
-    DispLevel, UserDefaultAttrProp, StdStringVector)
+from ._tango import DeviceImpl, Device_3Impl, Device_4Impl, Device_5Impl, \
+    DevFailed, Attribute, WAttribute, \
+    MultiAttribute, MultiClassAttribute, \
+    Attr, FwdAttr, Logger, AttrWriteType, AttrDataFormat, CmdArgType, \
+    DispLevel, UserDefaultAttrProp, UserDefaultFwdAttrProp, StdStringVector
 
 from .utils import document_method as __document_method
 from .utils import copy_doc, get_latest_device_class
@@ -351,7 +350,12 @@ def __DeviceImpl__add_attribute(self, attr, r_meth=None, w_meth=None, is_allo_me
         ia_name = is_allo_meth.__name__
 
     try:
-        self._add_attribute(attr, r_name, w_name, ia_name)
+#        import pdb
+#        pdb.set_trace()
+        if attr.is_fwd():
+            self._add_fwd_attribute(attr)
+        else:
+            self._add_attribute(attr, r_name, w_name, ia_name)
         if add_name_in_list:
             cl = self.get_device_class()
             cl.dyn_att_added_methods.append(att_name)
@@ -686,6 +690,12 @@ def __init_Attr():
     Attr.__str__ = __Attr__str
     Attr.__repr__ = __Attr__str
 
+def __FwdAttr__str(self):
+    return '%s(%s)' % (self.__class__.__name__, self.get_name())
+
+def __init_FwdAttr():
+    FwdAttr.__str__ = __FwdAttr__str
+    FwdAttr.__repr__ = __FwdAttr__str
 
 def __init_UserDefaultAttrProp():
     UserDefaultAttrProp.set_enum_labels = __UserDefaultAttrProp_set_enum_labels
@@ -2081,7 +2091,8 @@ def __doc_MultiAttribute():
         Return     : (seq<Attribute>) list of attribute objects
 
         New in PyTango 7.2.1
-    """)
+
+    """ )
 
 def __doc_Attr():
     def document_method(method_name, desc, append=True):
@@ -2382,6 +2393,24 @@ def __doc_Attr():
         Return     : None
     """)
 
+def __doc_FwdAttr():
+    def document_method(method_name, desc, append=True):
+        return __document_method(FwdAttr, method_name, desc, append)
+
+    FwdAttr.__doc__ = """
+    This class represents a Tango forwarded attribute.
+    """
+
+    document_method("set_default_properties", """
+    set_default_properties(self) -> None
+
+            Set default attribute properties.
+
+        Parameters :
+            - attr_prop : (UserDefaultFwdAttrProp) the user default property class
+        Return     : None
+    """ )
+
 def __doc_UserDefaultAttrProp():
     def document_method(method_name, desc, append=True):
         return __document_method(UserDefaultAttrProp, method_name, desc, append)
@@ -2680,10 +2709,34 @@ def __doc_UserDefaultAttrProp():
     """)
 
 
+def __doc_UserDefaultFwdAttrProp():
+    def document_method(method_name, desc, append=True):
+        return __document_method(UserDefaultFwdAttrProp, method_name, desc, append)
+
+    UserDefaultFwdAttrProp.__doc__ = """
+    User class to set forwarded attribute default properties.
+    This class is used to set forwarded attribute default properties.
+    Three levels of attributes properties setting are implemented within Tango.
+    The highest property setting level is the database.
+    Then the user default (set using this UserDefaultFwdAttrProp class) and finally
+    a Tango library default value
+    """
+
+    document_method("set_label", """
+    set_label(self, def_label) -> None
+
+            Set default label property. 
+
+        Parameters :
+            - def_label : (str) the user default label property 
+        Return     : None
+    """ )
+
 def device_server_init(doc=True):
     __init_DeviceImpl()
     __init_Attribute()
     __init_Attr()
+    __init_FwdAttr()
     __init_UserDefaultAttrProp()
     __init_Logger()
     if doc:
@@ -2696,4 +2749,6 @@ def device_server_init(doc=True):
         __doc_MultiAttribute()
         __doc_MultiClassAttribute()
         __doc_UserDefaultAttrProp()
+        __doc_UserDefaultFwdAttrProp()
         __doc_Attr()
+        __doc_FwdAttr()
