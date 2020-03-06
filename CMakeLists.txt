@@ -11,7 +11,7 @@ if(NOT WIN32)
 endif(NOT WIN32)
 
 add_definitions(-DWIN32)
-add_definitions(-DNDEBUG)
+add_definitions(-DDEBUG)
 add_definitions(-D_WINSTATIC)
 add_definitions(-DNPY_NO_DEPRECATED_API)
 add_definitions(-DBOOST_PYTHON_STATIC_LIB)

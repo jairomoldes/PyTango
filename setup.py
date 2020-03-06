@@ -415,7 +415,7 @@ def setup_args():
 
     author = Release.authors['Coutinho']
 
-    please_debug = False
+    please_debug = True
 
     packages = [
         'tango',
