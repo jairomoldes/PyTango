@@ -172,7 +172,12 @@ def __DeviceProxy__init__(self, *args, **kwargs):
     self._executors[GreenMode.Futures] = kwargs.pop('executor', None)
     self._executors[GreenMode.Gevent] = kwargs.pop('threadpool', None)
     self._executors[GreenMode.Asyncio] = kwargs.pop('asyncio_executor', None)
-    return DeviceProxy.__init_orig__(self, *args, **kwargs)
+    print type(args[0]), args[0]
+    print kwargs
+#    return DeviceProxy.__init_orig__(self, *args, **kwargs)
+    a = DeviceProxy.__init_orig__(self, *args)
+    print('Creado: ', a, type(a))
+    return a
 
 
 def __DeviceProxy__get_green_mode(self):
@@ -1570,6 +1575,7 @@ def __DeviceProxy__write_attribute_reply(self, *args, **kwargs):
 
 def __init_DeviceProxy():
     DeviceProxy.__init_orig__ = DeviceProxy.__init__
+    print(DeviceProxy.__init__, type(DeviceProxy))
     DeviceProxy.__init__ = __DeviceProxy__init__
 
     DeviceProxy.get_green_mode = __DeviceProxy__get_green_mode

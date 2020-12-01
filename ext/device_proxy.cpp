@@ -68,13 +68,16 @@ namespace PyDeviceProxy
 		}
 
 	public:
-		Py_DeviceProxy() { ::Tango::DeviceProxy(); }
+		Py_DeviceProxy() { cout << "WTF0???" << endl; ::Tango::DeviceProxy();}
 //		Py_DeviceProxy(const char *name) { ::Tango::DeviceProxy(name); }
 //		Py_DeviceProxy(const char *name, CORBA::ORB *orb) { if (orb == NULL) ::Tango::DeviceProxy(name, orb); else ::Tango::DeviceProxy(name); }
-		Py_DeviceProxy(const char *name, CORBA::ORB *orb=NULL) { ::Tango::DeviceProxy(name, orb); }
-		Py_DeviceProxy(const char *name, bool ch_access, CORBA::ORB *orb=NULL) { ::Tango::DeviceProxy(name, ch_access, orb); }
-		Py_DeviceProxy(std::string &name, CORBA::ORB *orb=NULL) { ::Tango::DeviceProxy(name, orb); }
-		Py_DeviceProxy(std::string &name, bool ch_access, CORBA::ORB *orb=NULL) { ::Tango::DeviceProxy(name, ch_access, orb); }
+
+//		Py_DeviceProxy(const Tango::DeviceProxy &sou) { AutoPythonAllowThreads guard; ::Tango::DeviceProxy(sou); }
+//		Py_DeviceProxy(const char *name) { AutoPythonAllowThreads guard; ::Tango::DeviceProxy(name, (const char *) NULL); }
+		Py_DeviceProxy(const char *name, CORBA::ORB *orb=NULL) { AutoPythonAllowThreads guard; cout << "WTF???" << name << endl; ::Tango::DeviceProxy(name, orb);}
+//		Py_DeviceProxy(const char *name, bool ch_access, CORBA::ORB *orb=NULL) { AutoPythonAllowThreads guard; ::Tango::DeviceProxy(name, ch_access, orb); }
+//		Py_DeviceProxy(std::string &name, CORBA::ORB *orb=NULL) { AutoPythonAllowThreads guard; ::Tango::DeviceProxy(name, orb); }
+//		Py_DeviceProxy(std::string &name, bool ch_access, CORBA::ORB *orb=NULL) { AutoPythonAllowThreads guard; ::Tango::DeviceProxy(name, ch_access, orb); }
 		~Py_DeviceProxy() {
 			AutoPythonAllowThreads guard;
 			this->unsubscribe_all();
@@ -751,6 +754,7 @@ namespace PyDeviceProxy
         return get_events__aux<Tango::DevIntrChangeEventData, Tango::DevIntrChangeEventDataList>(py_self, event_id, extract_as);
     }
 
+/*
     static boost::shared_ptr<Py_DeviceProxy> makeDeviceProxy1(const std::string& name)
     {
     Py_DeviceProxy* dp = NULL;
@@ -770,6 +774,7 @@ namespace PyDeviceProxy
     }
     return boost::shared_ptr<Py_DeviceProxy>(dp);
     }
+*/
 };
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(lock_overloads, Tango::DeviceProxy::lock, 0, 1);
@@ -788,18 +793,29 @@ void export_device_proxy()
     void (PyDeviceProxy::Py_DeviceProxy::*delete_property_)(std::string &) =
         &PyDeviceProxy::Py_DeviceProxy::delete_property;
 
-    bopy::class_<PyDeviceProxy::Py_DeviceProxy, bopy::bases<Tango::Connection> >
-        DeviceProxy("DeviceProxy", bopy::init<>())
-    ;
+   bopy::class_<PyDeviceProxy::Py_DeviceProxy, bopy::bases<Tango::Connection> >
+       DeviceProxy("DeviceProxy", bopy::init<>())
+   ;
+
+//    bopy::class_<PyDeviceProxy::Py_DeviceProxy, bopy::bases<Tango::Connection> >
+//        DeviceProxy("DeviceProxy", bopy::no_init)
+//    ;
 
     DeviceProxy
         .def(bopy::init<const char *>())
         .def(bopy::init<const char *, bool>())
-        .def(bopy::init<const PyDeviceProxy::Py_DeviceProxy &>())
-        .def("__init__", boost::python::make_constructor(PyDeviceProxy::makeDeviceProxy1))
-        .def("__init__", boost::python::make_constructor(PyDeviceProxy::makeDeviceProxy2))
+//        .def(bopy::init<const PyDeviceProxy::Py_DeviceProxy &>())
+//        .def("__init__", boost::python::make_constructor(PyDeviceProxy::makeDeviceProxy1))
+//        .def("__init__", boost::python::make_constructor(PyDeviceProxy::makeDeviceProxy2))
 
-        //
+//        .def(bopy::init<const Tango::DeviceProxy &>())
+//        .def(bopy::init<const char *, CORBA::ORB *>())
+//        .def(bopy::init<const char *, bool, CORBA::ORB *>())
+//        .def(bopy::init<std::string &>())
+//        .def(bopy::init<std::string &, CORBA::ORB *>())
+///        .def(bopy::init<std::string &, bool, CORBA::ORB *>())
+
+		//
         // Pickle
         //
         .def_pickle(PyDeviceProxy::PickleSuite())
